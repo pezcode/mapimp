@@ -42,9 +42,9 @@ POSSIBILITY OF SUCH DAMAGE BLAH BLAH BLAH
 #include <string.h>
 
 /* Use this switch if you want to compile for OllyDbg 1.10 */
-//#define OLLYDBG
+#define OLLYDBG
 /* Use this switch if you want to compile for ImmDbg 1.73 */
-#define IMMDBG
+//#define IMMDBG
 
 #define PCRE_STATIC
 
@@ -56,7 +56,7 @@ POSSIBILITY OF SUCH DAMAGE BLAH BLAH BLAH
 /* and OllyDbg/ImmDbg Plugin SDK to compile */
 #ifdef OLLYDBG
 
-#include "__odbg\plugin.h"
+#include "ollydbg.h"
 
 #else
 #ifdef IMMDBG
@@ -80,22 +80,22 @@ config_t* g_Config;
 
 #ifndef MASKTEST
 
-static TCHAR c_About[] =
-	"MAPIMP plugin v0.9\n"
-	"coded by takerZ\n\n"
-	"Thanks to all those, who had contributed\n"
-	"their code, ideas and bugreports:\n\n"
-	"9999 (misterious guy from the board)\n"
-	"awerto\n"
-	"BoRoV\n"
-	"DillerInc\n"
-	"Jupiter\n"
-	"PE_Kill\n"
-	"Runner\n"
-	"sendersu\n"
-	"void\n\n"
-	"My excuses if forgot somebody.\n\n"
-	"tPORt, 2009-2010";
+static WCHAR c_About[] =
+	L"MAPIMP plugin v0.9\n"
+	L"coded by takerZ\n\n"
+	L"Thanks to all those, who had contributed\n"
+	L"their code, ideas and bugreports:\n\n"
+	L"9999 (misterious guy from the board)\n"
+	L"awerto\n"
+	L"BoRoV\n"
+	L"DillerInc\n"
+	L"Jupiter\n"
+	L"PE_Kill\n"
+	L"Runner\n"
+	L"sendersu\n"
+	L"void\n\n"
+	L"My excuses if forgot somebody.\n\n"
+	L"tPORt, 2009-2010";
 
 static ACCEL c_AccelTable[] =
 {
@@ -128,10 +128,10 @@ static ACCEL c_AccelTable[] =
 
 #endif
 
-int mask_compile(mask_t* msk, TCHAR* subj)
+int mask_compile(mask_t* msk, CHAR* subj)
 {
 	int mod = 0, cntr_msk = 1, cntr_repl;
-	TCHAR buffer[TEXTLEN];
+	CHAR buffer[TEXTLEN];
 	if (subj[0] == '/')
 	{
 		if ((subj[cntr_msk] == 'i') || (subj[cntr_msk] == 'I'))
@@ -202,8 +202,8 @@ int mask_compile(mask_t* msk, TCHAR* subj)
 			msk->regex = pcre_compile2(&subj[cntr_msk + 1], mod, &msk->errcode, &msk->errptr, &msk->erroffset, NULL);
 			if (!msk->errcode)
 			{
-				msk->repl_s = (strlen(buffer) + 1) * sizeof(TCHAR);
-				msk->repl = malloc(msk->repl_s * sizeof(TCHAR));
+				msk->repl_s = (strlen(buffer) + 1) * sizeof(CHAR);
+				msk->repl = malloc(msk->repl_s * sizeof(CHAR));
 				strcpy(msk->repl, buffer);
 				msk->extra = pcre_study(msk->regex, 0, &msk->errptr);
 				msk->type = FILTER_REPLACE;
@@ -360,14 +360,14 @@ mask_t* list_addmask(list_t* lst, TCHAR* str)
 	return msk;
 }
 
-list_t* list_addname(list_t* lst, TCHAR* name, size_t length, ULONG segment, ULONG offset)
+list_t* list_addname(list_t* lst, WCHAR* name, size_t length, ULONG segment, ULONG offset)
 {
 	name_t* nm = malloc(sizeof(name_t));
 	if (name)
 	{
-		nm->size = (length + 1) * sizeof(TCHAR);
+		nm->size = (length + 1) * sizeof(WCHAR);
 		nm->buffer = malloc(nm->size);
-		strcpy(nm->buffer, name);
+		wcscpy(nm->buffer, name);
 	}
 	else
 	{
@@ -433,10 +433,10 @@ void list_freenames(list_t* lst)
 
 #ifndef MASKTEST
 
-BOOL config_create(TCHAR* path, config_t* conf)
+BOOL config_create(WCHAR* path, config_t* conf)
 {
 	BOOL result = FALSE;
-	FILE* file = fopen(path, "w");
+	FILE* file = _wfopen(path, L"w");
 	mask_t* msk;
 	if (file)
 	{
@@ -472,10 +472,10 @@ BOOL config_create(TCHAR* path, config_t* conf)
 	return result;
 }
 
-TCHAR* config_locate(TCHAR* buffer)
+WCHAR* config_locate(WCHAR* buffer)
 {
 	GetModuleFileName(g_hInstDLL, buffer, MAX_PATH);
-	strcpy(strrchr(buffer, '\\'), "\\mapimp.cfg");
+	wcscpy(wcsrchr(buffer, L'\\'), L"\\mapimp.cfg");
 	return buffer;
 }
 
@@ -491,10 +491,10 @@ void config_defaults(config_t* conf)
 	conf->aimport = AUTOIMPORT_ASK;
 }
 
-config_t* config_parse(TCHAR* path)
+config_t* config_parse(WCHAR* path)
 {
-	FILE* file = fopen(path, "r");
-	TCHAR buffer[TEXTLEN], param[CONFIG_STR_MAXSIZE];
+	FILE* file = _wfopen(path, L"r");
+	CHAR buffer[TEXTLEN], param[CONFIG_STR_MAXSIZE];
 	size_t len, count;
 	mask_t* msk;
 	config_t* conf = malloc(sizeof(config_t));
@@ -589,7 +589,7 @@ config_t* config_parse(TCHAR* path)
 	return conf;
 }
 
-BOOL menuitem_add(HMENU hmenu, TCHAR* lpstr, UINT index, UINT id)
+BOOL menuitem_add(HMENU hmenu, WCHAR* lpstr, UINT index, UINT id)
 {
 	MENUITEMINFO mi;
 	mi.cbSize = sizeof(MENUITEMINFO);
@@ -598,7 +598,7 @@ BOOL menuitem_add(HMENU hmenu, TCHAR* lpstr, UINT index, UINT id)
 	{
 		mi.fType = MFT_STRING;
 		mi.dwTypeData = lpstr;
-		mi.cch = strlen(lpstr);
+		mi.cch = wcslen(lpstr);
 	}
 	else
 	{
@@ -618,19 +618,19 @@ LRESULT CALLBACK listbox_msgproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lpar
 	{
 		case WM_RBUTTONDOWN:
 			pm = CreatePopupMenu();
-			menuitem_add(pm, "Add", 0, ID_ADD);
+			menuitem_add(pm, L"Add", 0, ID_ADD);
 			if (SendMessage(hwnd, LB_GETCURSEL, 0, 0) != LB_ERR)
 			{
-				menuitem_add(pm, "Insert", 1, ID_INSERT);
-				menuitem_add(pm, "Edit", 2, ID_EDIT);
-				menuitem_add(pm, "Delete", 3, ID_DELETE);
+				menuitem_add(pm, L"Insert", 1, ID_INSERT);
+				menuitem_add(pm, L"Edit", 2, ID_EDIT);
+				menuitem_add(pm, L"Delete", 3, ID_DELETE);
 			}
 			menuitem_add(pm, NULL, 4, 0);
 			if (SendMessage(hwnd, LB_GETCOUNT, 0, 0) > 0)
 			{
-				menuitem_add(pm, "Save list", 5, ID_SAVE);
+				menuitem_add(pm, L"Save list", 5, ID_SAVE);
 			}
-			menuitem_add(pm, "Load list", 6, ID_LOAD);
+			menuitem_add(pm, L"Load list", 6, ID_LOAD);
 			point.x = LOWORD(lparam);
 			point.y = HIWORD(lparam);
 			ClientToScreen(hwnd, &point);
@@ -656,7 +656,7 @@ LRESULT CALLBACK configwnd_msgproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
 	HWND wnd;
 	RECT rect;
 	FILE* file;
-	TCHAR buffer[TEXTLEN], errbuf[ERRBUFLEN];
+	WCHAR buffer[TEXTLEN], errbuf[ERRBUFLEN];
 	mask_t* msk;
 	mask_t msk_tmp;
 	int counter, index, height, count, result;
@@ -870,23 +870,23 @@ LRESULT CALLBACK configwnd_msgproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
 					if (count > 0)
 					{
 						EnableWindow(hwnd, FALSE);
-						buffer[0] = '\0';
-						if (Browsefilename("Save mask list to:", buffer, ".TXT|*.*", 0x80))
+						buffer[0] = L'\0';
+						if (Browsefilename(L"Save mask list to:", buffer, L".TXT|*.*", 0x80))
 						{
-							file = fopen(buffer, "w");
+							file = _wfopen(buffer, L"w");
 							if (file)
 							{
 								for (counter = 0; counter < count; counter++)
 								{
 									SendMessage(g_hwndMaskList, LB_GETTEXT, counter, (LPARAM)buffer);
-									strcat(buffer, "\n");
+									wcscat(buffer, L"\n");
 									fputs(buffer, file);
 								}
 								fclose(file);
 							}
 							else
 							{
-								MessageBox(hwnd, "Failed to open the file for writing", 0, MB_ICONERROR);
+								MessageBox(hwnd, L"Failed to open the file for writing", 0, MB_ICONERROR);
 							}
 						}
 						EnableWindow(hwnd, TRUE);
@@ -896,15 +896,15 @@ LRESULT CALLBACK configwnd_msgproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
 
 				case ID_LOAD:
 					EnableWindow(hwnd, FALSE);
-					buffer[0] = '\0';
-					if (Browsefilename("Load mask list from:", buffer, ".TXT|*.*", 0))
+					buffer[0] = L'\0';
+					if (Browsefilename(L"Load mask list from:", buffer, L".TXT|*.*", 0))
 					{
-						file = fopen(buffer, "r");
+						file = _wfopen(buffer, L"r");
 						if (file)
 						{
 							while (SendMessage(g_hwndMaskList, LB_DELETESTRING, 0, 0) != LB_ERR)
 							{}
-							while (fgets(buffer, TEXTLEN, file))
+							while (fgetws(buffer, TEXTLEN, file))
 							{
 								strtok(buffer, "\n");
 								if (!mask_compile(&msk_tmp, buffer))
@@ -922,7 +922,7 @@ LRESULT CALLBACK configwnd_msgproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
 						}
 						else
 						{
-							MessageBox(hwnd, "Failed to open the file", 0, MB_ICONERROR);
+							MessageBox(hwnd, L"Failed to open the file", 0, MB_ICONERROR);
 						}
 					}
 					EnableWindow(hwnd, TRUE);
@@ -971,7 +971,7 @@ LRESULT CALLBACK configwnd_msgproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
 					result = TRUE;
 					while (result)
 					{
-						result = Gettextxy("Insert new mask:", buffer, 0, INPUTWND_TYPE, Plugingetvalue(VAL_WINDOWFONT),
+						result = Gettextxy(L"Insert new mask:", buffer, 0, INPUTWND_TYPE, Plugingetvalue(VAL_WINDOWFONT),
 							GetSystemMetrics(SM_CXSCREEN) / 2, GetSystemMetrics(SM_CYSCREEN) / 2);
 						if (result > 0)
 						{
@@ -1011,7 +1011,7 @@ LRESULT CALLBACK configwnd_msgproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
 						result = TRUE;
 						while (result)
 						{
-							result = Gettextxy("Edit mask:", buffer, 0, INPUTWND_TYPE, Plugingetvalue(VAL_WINDOWFONT),
+							result = Gettextxy(L"Edit mask:", buffer, 0, INPUTWND_TYPE, Plugingetvalue(VAL_WINDOWFONT),
 							GetSystemMetrics(SM_CXSCREEN) / 2, GetSystemMetrics(SM_CYSCREEN) / 2);
 							if (result > 0)
 							{
@@ -1020,7 +1020,7 @@ LRESULT CALLBACK configwnd_msgproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
 									strcpy(errbuf, buffer);
 									strcat(errbuf, "\n\n");
 									mask_error(&msk_tmp, strrchr(errbuf, '\n') + 1);
-									MessageBox(hwnd, errbuf, "Mask syntax error", MB_ICONERROR);
+									MessageBox(hwnd, errbuf, L"Mask syntax error", MB_ICONERROR);
 								}
 								else
 								{
@@ -1053,51 +1053,51 @@ LRESULT CALLBACK configwnd_msgproc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lp
 			height = rect.bottom - rect.top - height + OPTWND_WINDOW_HEIGHT;
 			SetWindowPos(hwnd, NULL, 0, 0, rect.right - rect.left, height, SWP_NOMOVE | SWP_NOZORDER);
 
-			wnd = CreateWindowEx(0, "Button", "Import objects:", 0x50020007, 4, 0, 128, 64, hwnd, (HMENU)ID_IMPORT, g_hInstance, NULL);
+			wnd = CreateWindowEx(0, L"Button", L"Import objects:", 0x50020007, 4, 0, 128, 64, hwnd, (HMENU)ID_IMPORT, g_hInstance, NULL);
 			SendMessage(wnd, WM_SETFONT, (WPARAM)g_hFont, TRUE);
-			wnd = CreateWindowEx(0, "Button", "&Comments", 0x50010003, 12, 16, 112, 20, hwnd, (HMENU)ID_COMMENTS, g_hInstance, NULL);
+			wnd = CreateWindowEx(0, L"Button", L"&Comments", 0x50010003, 12, 16, 112, 20, hwnd, (HMENU)ID_COMMENTS, g_hInstance, NULL);
 			SendMessage(wnd, WM_SETFONT, (WPARAM)g_hFont, TRUE);
-			wnd = CreateWindowEx(0, "Button", "&Labels", 0x50010003, 12, 36, 112, 20, hwnd, (HMENU)ID_LABELS, g_hInstance, NULL);
-			SendMessage(wnd, WM_SETFONT, (WPARAM)g_hFont, TRUE);
-
-			wnd = CreateWindowEx(0, "Button", "Collisions:", 0x50020007, 4, 68, 128, 64, hwnd, (HMENU)ID_COLLISIONS, g_hInstance, NULL);
-			SendMessage(wnd, WM_SETFONT, (WPARAM)g_hFont, TRUE);
-			wnd = CreateWindowEx(0, "Button", "&Skip if collision", 0x50010009, 12, 86, 116, 16, hwnd, (HMENU)ID_SKIP, g_hInstance, NULL);
-			SendMessage(wnd, WM_SETFONT, (WPARAM)g_hFont, TRUE);
-			wnd = CreateWindowEx(0, "Button", "&Overwrite", 0x50000009, 12, 106, 116, 16, hwnd, (HMENU)ID_OVERWRITE, g_hInstance, NULL);
+			wnd = CreateWindowEx(0, L"Button", L"&Labels", 0x50010003, 12, 36, 112, 20, hwnd, (HMENU)ID_LABELS, g_hInstance, NULL);
 			SendMessage(wnd, WM_SETFONT, (WPARAM)g_hFont, TRUE);
 
-			wnd = CreateWindowEx(0, "Button", "Apply names to:", 0x50020007, 4, 136, 128, 64, hwnd, (HMENU)ID_APPLYTO, g_hInstance, NULL);
+			wnd = CreateWindowEx(0, L"Button", L"Collisions:", 0x50020007, 4, 68, 128, 64, hwnd, (HMENU)ID_COLLISIONS, g_hInstance, NULL);
 			SendMessage(wnd, WM_SETFONT, (WPARAM)g_hFont, TRUE);
-			wnd = CreateWindowEx(0, "Button", "&Viewed module", 0x50010009, 12, 154, 116, 16, hwnd, (HMENU)ID_MODULE, g_hInstance, NULL);
+			wnd = CreateWindowEx(0, L"Button", L"&Skip if collision", 0x50010009, 12, 86, 116, 16, hwnd, (HMENU)ID_SKIP, g_hInstance, NULL);
 			SendMessage(wnd, WM_SETFONT, (WPARAM)g_hFont, TRUE);
-			wnd = CreateWindowEx(0, "Button", "&Debuggee", 0x50010009, 12, 174, 116, 16, hwnd, (HMENU)ID_DEBUGGEE, g_hInstance, NULL);
-			SendMessage(wnd, WM_SETFONT, (WPARAM)g_hFont, TRUE);
-
-			wnd = CreateWindowEx(0, "Button", "If map file found:", 0x50020007, 4, 204, 128, 80, hwnd, (HMENU)ID_AUTOIMPORT, g_hInstance, NULL);
-			SendMessage(wnd, WM_SETFONT, (WPARAM)g_hFont, TRUE);
-			wnd = CreateWindowEx(0, "Button", "&Ask to import", 0x50000009, 12, 222, 116, 16, hwnd, (HMENU)ID_ASKTOIMPORT, g_hInstance, NULL);
-			SendMessage(wnd, WM_SETFONT, (WPARAM)g_hFont, TRUE);
-			wnd = CreateWindowEx(0, "Button", "&Import always", 0x50000009, 12, 242, 116, 16, hwnd, (HMENU)ID_IMPORTALWAYS, g_hInstance, NULL);
-			SendMessage(wnd, WM_SETFONT, (WPARAM)g_hFont, TRUE);
-			wnd = CreateWindowEx(0, "Button", "Do &nothing", 0x50000009, 12, 262, 116, 16, hwnd, (HMENU)ID_DONOTHING, g_hInstance, NULL);
+			wnd = CreateWindowEx(0, L"Button", L"&Overwrite", 0x50000009, 12, 106, 116, 16, hwnd, (HMENU)ID_OVERWRITE, g_hInstance, NULL);
 			SendMessage(wnd, WM_SETFONT, (WPARAM)g_hFont, TRUE);
 
-			wnd = CreateWindowEx(0, "Button", "Filter:", 0x50020007, 136, 0, 208, 284, hwnd, (HMENU)ID_FILTER, g_hInstance, NULL);
+			wnd = CreateWindowEx(0, L"Button", L"Apply names to:", 0x50020007, 4, 136, 128, 64, hwnd, (HMENU)ID_APPLYTO, g_hInstance, NULL);
 			SendMessage(wnd, WM_SETFONT, (WPARAM)g_hFont, TRUE);
-			g_hwndMaskList = CreateWindowEx(0x200, "ListBox", "", WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL, 144, 16, 192, 230, hwnd, (HMENU)ID_MASKS, g_hInstance, NULL);
+			wnd = CreateWindowEx(0, L"Button", L"&Viewed module", 0x50010009, 12, 154, 116, 16, hwnd, (HMENU)ID_MODULE, g_hInstance, NULL);
+			SendMessage(wnd, WM_SETFONT, (WPARAM)g_hFont, TRUE);
+			wnd = CreateWindowEx(0, L"Button", L"&Debuggee", 0x50010009, 12, 174, 116, 16, hwnd, (HMENU)ID_DEBUGGEE, g_hInstance, NULL);
+			SendMessage(wnd, WM_SETFONT, (WPARAM)g_hFont, TRUE);
+
+			wnd = CreateWindowEx(0, L"Button", L"If map file found:", 0x50020007, 4, 204, 128, 80, hwnd, (HMENU)ID_AUTOIMPORT, g_hInstance, NULL);
+			SendMessage(wnd, WM_SETFONT, (WPARAM)g_hFont, TRUE);
+			wnd = CreateWindowEx(0, L"Button", L"&Ask to import", 0x50000009, 12, 222, 116, 16, hwnd, (HMENU)ID_ASKTOIMPORT, g_hInstance, NULL);
+			SendMessage(wnd, WM_SETFONT, (WPARAM)g_hFont, TRUE);
+			wnd = CreateWindowEx(0, L"Button", L"&Import always", 0x50000009, 12, 242, 116, 16, hwnd, (HMENU)ID_IMPORTALWAYS, g_hInstance, NULL);
+			SendMessage(wnd, WM_SETFONT, (WPARAM)g_hFont, TRUE);
+			wnd = CreateWindowEx(0, L"Button", L"Do &nothing", 0x50000009, 12, 262, 116, 16, hwnd, (HMENU)ID_DONOTHING, g_hInstance, NULL);
+			SendMessage(wnd, WM_SETFONT, (WPARAM)g_hFont, TRUE);
+
+			wnd = CreateWindowEx(0, L"Button", L"Filter:", 0x50020007, 136, 0, 208, 284, hwnd, (HMENU)ID_FILTER, g_hInstance, NULL);
+			SendMessage(wnd, WM_SETFONT, (WPARAM)g_hFont, TRUE);
+			g_hwndMaskList = CreateWindowEx(0x200, L"ListBox", L"", WS_CHILD | WS_VISIBLE | WS_BORDER | WS_VSCROLL, 144, 16, 192, 230, hwnd, (HMENU)ID_MASKS, g_hInstance, NULL);
 			SendMessage(g_hwndMaskList, WM_SETFONT, (WPARAM)g_hFont, TRUE);
 			SetWindowLongPtr(g_hwndMaskList, GWLP_USERDATA, SetWindowLongPtr(g_hwndMaskList, GWLP_WNDPROC, (LONG)listbox_msgproc));
 			SetFocus(g_hwndMaskList);
 
-			wnd = CreateWindowEx(0, "Button", "Use &masks", 0x50010003, 144, 242, 116, 16, hwnd, (HMENU)ID_USEMASKS, g_hInstance, NULL);
+			wnd = CreateWindowEx(0, L"Button", L"Use &masks", 0x50010003, 144, 242, 116, 16, hwnd, (HMENU)ID_USEMASKS, g_hInstance, NULL);
 			SendMessage(wnd, WM_SETFONT, (WPARAM)g_hFont, TRUE);
-			wnd = CreateWindowEx(0, "Button", "D&emangle names", 0x50010003, 144, 262, 116, 16, hwnd, (HMENU)ID_DEMANGLE, g_hInstance, NULL);
+			wnd = CreateWindowEx(0, L"Button", L"D&emangle names", 0x50010003, 144, 262, 116, 16, hwnd, (HMENU)ID_DEMANGLE, g_hInstance, NULL);
 			SendMessage(wnd, WM_SETFONT, (WPARAM)g_hFont, TRUE);
 
-			wnd = CreateWindowEx(0, "Button", "Apply", 0x50012F00, 204, 288, 68, 20, hwnd, (HMENU)ID_APPLY, g_hInstance, NULL);
+			wnd = CreateWindowEx(0, L"Button", L"Apply", 0x50012F00, 204, 288, 68, 20, hwnd, (HMENU)ID_APPLY, g_hInstance, NULL);
 			SendMessage(wnd, WM_SETFONT, (WPARAM)g_hFont, TRUE);
-			wnd = CreateWindowEx(0, "Button", "Cancel", 0x50012F00, 276, 288, 68, 20, hwnd, (HMENU)ID_CANCEL, g_hInstance, NULL);
+			wnd = CreateWindowEx(0, L"Button", L"Cancel", 0x50012F00, 276, 288, 68, 20, hwnd, (HMENU)ID_CANCEL, g_hInstance, NULL);
 			SendMessage(wnd, WM_SETFONT, (WPARAM)g_hFont, TRUE);
 
 			if (g_Config->comments)
@@ -1200,6 +1200,7 @@ void configwnd_create()
 	WNDCLASS wc;
 	HWND wnd;
 	MSG msg;
+	BOOL bRet;
 	HACCEL acctable = CreateAcceleratorTable((LPACCEL)&c_AccelTable, sizeof(c_AccelTable) / sizeof(ACCEL));
 	InitCommonControls();
 	wc.cbClsExtra = 0;
@@ -1222,7 +1223,7 @@ void configwnd_create()
 			OPTWND_WINDOW_WIDTH, OPTWND_WINDOW_HEIGHT, g_hwndOlly, NULL, g_hInstance, NULL);
 	ShowWindow(wnd, SW_SHOWNORMAL);
 	UpdateWindow(wnd);
-	while (GetMessage(&msg, NULL, 0, 0))
+	while ((bRet = GetMessage(&msg, NULL, 0, 0)) != 0 && bRet != -1)
 	{
 		if (!TranslateAccelerator(wnd, acctable, &msg))
 		{
@@ -1244,13 +1245,13 @@ module_t* module_info(int* err)
 	PIMAGE_NT_HEADERS nt;
 	PIMAGE_SECTION_HEADER sh;
 	ULONG needed, cntr, cbase, csize;
-	TCHAR buffer[TEXTLEN];
+	WCHAR buffer[TEXTLEN];
 	t_module* dbg_mod;
 	module_t* info = (module_t*)malloc(sizeof(module_t));
 	if (g_Config->applytodebuggee)
 	{
-		info->name = (TCHAR*)Plugingetvalue(VAL_EXEFILENAME);
-		hProcess = (HANDLE)Plugingetvalue(VAL_HPROCESS);
+		info->name = _executable;
+		hProcess = _process;
 		EnumProcessModules(hProcess, NULL, 0, &needed);
 		modules = malloc(needed);
 		EnumProcessModules(hProcess, modules, needed, &needed);
@@ -1258,7 +1259,7 @@ module_t* module_info(int* err)
 		for (cntr = 0, info->base = 0; cntr < needed; cntr++)
 		{
 			GetModuleFileNameEx(hProcess, modules[cntr], buffer, TEXTLEN);
-			if (!strcmp(info->name, buffer))
+			if (!wcscmp(info->name, buffer))
 			{
 				info->base = (ULONG)modules[cntr];
 				break;
@@ -1279,7 +1280,7 @@ module_t* module_info(int* err)
 		if (dbg_mod)
 		{
 			info->base = (ULONG)dbg_mod->base;
-			info->name = (TCHAR*)&dbg_mod->path;
+			info->name = (WCHAR*)&dbg_mod->path;
 		}
 		else
 		{
@@ -1341,22 +1342,22 @@ void module_error(int err)
 	switch (err)
 	{
 		case MODULE_BASE_NOT_FOUND:
-			Flash("Failed to obtain debuggee's ImageBase");
-			Addtolist(0, 1, "Failed to obtain debuggee's ImageBase");
+			Flash(L"Failed to obtain debuggee's ImageBase");
+			Addtolist(0, 1, L"Failed to obtain debuggee's ImageBase");
 			break;
 
 		case MODULE_OUT_OF_RANGE:
-			Flash("You are not viewing any module");
+			Flash(L"You are not viewing any module");
 			break;
 
 		case MODULE_FILE_MAPPING_FAILURE:
-			Flash("Failed to create file mapping");
-			Addtolist(0, 1, "Failed to create file mapping");
+			Flash(L"Failed to create file mapping");
+			Addtolist(0, 1, L"Failed to create file mapping");
 			break;
 
 		case MODULE_FILE_SHARING_VIOLATION:
-			Flash("Failed to obtain file handle");
-			Addtolist(0, 1, "Failed to obtain file handle");
+			Flash(L"Failed to obtain file handle");
+			Addtolist(0, 1, L"Failed to obtain file handle");
 			break;
 
 		default:
@@ -1380,7 +1381,7 @@ void mapfile_apply(list_t* names)
 	module_t* module = module_info(&err);
 	if (!err)
 	{
-		Addtolist(0, 0, "Applying names from map file to module '%s'", module->name);
+		Addtolist(0, 0, L"Applying names from map file to module '%s'", module->name);
 		if (!g_Config->collisionchecks)
 		{
 			rmtable = list_create();
@@ -1392,8 +1393,8 @@ void mapfile_apply(list_t* names)
 			{
 				if (g_Config->demangle)
 				{
-					undecorated = (TCHAR*)malloc(2 * nm->size * sizeof(TCHAR));
-					if (result = Demanglename(nm->buffer, NM_LIBRARY, undecorated))
+					undecorated = (WCHAR*)malloc(2 * nm->size * sizeof(WCHAR));
+					if (result = DemanglenameW(nm->buffer, NM_IMPORT/*NM_LIBRARY*/, undecorated))
 					{
 						free(nm->buffer);
 						nm->size = result + 1;
@@ -1412,7 +1413,7 @@ void mapfile_apply(list_t* names)
 						filtered++;
 						if ((result & FILTER_SKIP) && !g_Config->collisionchecks &&
 							/* Findname for NM_ANYNAME fails everytime, dunno why */
-							(Findname(addr, NM_COMMENT, NULL) || Findname(addr, NM_LABEL, NULL))) 
+							(FindnameW(addr, NM_COMMENT, NULL) || FindnameW(addr, NM_LABEL, NULL))) 
 						{
 							list_addname(rmtable, NULL, 0, nm->segment, nm->offset);
 							total++;
@@ -1425,12 +1426,12 @@ void mapfile_apply(list_t* names)
 				{
 					if (g_Config->collisionchecks)
 					{
-						if (!Findname(addr, NM_COMMENT, NULL) && !Quickinsertname(addr, NM_COMMENT, nm->buffer))
+						if (!FindnameW(addr, NM_COMMENT, NULL) && !QuickinsertnameW(addr, NM_COMMENT, nm->buffer))
 						{
 							applied++;
 						}
 					}
-					else if (!Quickinsertname(addr, NM_COMMENT, nm->buffer))
+					else if (!QuickinsertnameW(addr, NM_COMMENT, nm->buffer))
 					{
 						applied++;
 					}
@@ -1439,38 +1440,38 @@ void mapfile_apply(list_t* names)
 				{
 					if (g_Config->collisionchecks)
 					{
-						if (!Findlabel(addr, NULL) && !Quickinsertname(addr, NM_LABEL, nm->buffer))
+						if (!Findlabel(addr, NULL) && !QuickinsertnameW(addr, NM_LABEL, nm->buffer))
 						{
 							applied++;
 						}
 					}
-					else if (!Quickinsertname(addr, NM_LABEL, nm->buffer))
+					else if (!QuickinsertnameW(addr, NM_LABEL, nm->buffer))
 					{
 						applied++;
 					}
 				}
 			}
 			total++;
-			Progress(total * 1000 / names->count, "Inserting names");
+			Progress(total * 1000 / names->count, L"Inserting names");
 			nm = nm->next;
 		}
-		Progress(0, "");
-		Infoline("Merging names");
-		Mergequicknames();
+		Progress(0, L"");
+		Info(L"Merging names");
+		Mergequickdata(); //Mergequicknames();
 		if (!g_Config->collisionchecks)
 		{
-			Infoline("Cleaning skipped entries");
+			Info(L"Cleaning skipped entries");
 			nm = (name_t*)rmtable->first;
 			while (nm)
 			{
 				addr = module->base + module->segments[nm->segment] + nm->offset;
 				if (g_Config->comments)
 				{
-					Insertname(addr, NM_COMMENT, "");
+					InsertnameW(addr, NM_COMMENT, L"");
 				}
 				if (g_Config->labels)
 				{
-					Insertname(addr, NM_LABEL, "");
+					InsertnameW(addr, NM_LABEL, L"");
 				}
 				nm_last = nm;
 				nm = nm->next;
@@ -1478,8 +1479,8 @@ void mapfile_apply(list_t* names)
 				free(nm_last);
 			}
 		}
-		Infoline("Total loaded: %d, Names applied: %d, Names filtered: %d", total, applied, filtered);
-		Addtolist(0, -1, "  Total loaded: %d, Names applied: %d, Names filtered: %d", total, applied, filtered);
+		Info(L"Total loaded: %d, Names applied: %d, Names filtered: %d", total, applied, filtered);
+		Addtolist(0, -1, L"  Total loaded: %d, Names applied: %d, Names filtered: %d", total, applied, filtered);
 		module_free(module);
 	}
 	else
@@ -1491,22 +1492,22 @@ void mapfile_apply(list_t* names)
 #endif
 
 /* The stuff is full of hacks. Do not even try to understand whats going on here */
-list_t* mapfile_parse(TCHAR* path)
+list_t* mapfile_parse(WCHAR* path)
 {
-	FILE* file = fopen(path, "r");
+	FILE* file = _wfopen(path, L"r");
 	list_t* list = NULL;
 	BYTE segment;
 	ULONG offset, len, counter, ntokens = 0;
-	TCHAR* buffer, *oldbuffer;
+	CHAR* buffer, *oldbuffer;
 	if (file)
 	{
-		buffer = malloc(MAPBUFLEN * sizeof(TCHAR));
+		buffer = malloc(MAPBUFLEN * sizeof(CHAR));
 		oldbuffer = buffer;
 		for (counter = 0; counter < 3; counter++)
 		{
 			while (fgets(buffer, MAPBUFLEN, file))
 			{
-				buffer[strlen(buffer) - 1] = '\0';
+				//buffer[strlen(buffer) - 1] = '\0'; // WTF
 				if (strstr(buffer, "Address"))
 				{
 					if (!list)
@@ -1590,21 +1591,21 @@ list_t* mapfile_parse(TCHAR* path)
 
 #ifndef MASKTEST
 
-BOOL mapfile_browse(TCHAR* path)
+BOOL mapfile_browse(WCHAR* path)
 {
 	OPENFILENAME ofn;
-	TCHAR fpath[MAX_PATH];
+	WCHAR fpath[MAX_PATH];
 	memset(&ofn, 0, sizeof(OPENFILENAME));
 	ofn.lStructSize = sizeof(OPENFILENAME);
-	path[0] = '\0';
-	ofn.hwndOwner = (HWND)Plugingetvalue(VAL_HWMAIN);
+	path[0] = L'\0';
+	ofn.hwndOwner = _hwollymain;
 	ofn.lpstrFile = path;
 	ofn.nMaxFile = MAX_PATH;
-	ofn.lpstrFilter = "Map Files\0*.MAP\0All Files\0*.*\0\0";
-	ofn.lpstrDefExt = "MAP";
-	ofn.lpstrTitle = "Select map file to import";
-	strcpy(fpath, (TCHAR*)Plugingetvalue(VAL_EXEFILENAME));
-	*(strrchr(fpath, '\\') + 1) = '\0';
+	ofn.lpstrFilter = L"Map Files\0*.MAP\0All Files\0*.*\0\0";
+	ofn.lpstrDefExt = L"MAP";
+	ofn.lpstrTitle = L"Select map file to import";
+	wcscpy(fpath, _executable);
+	*(wcsrchr(fpath, '\\') + 1) = L'\0';
 	ofn.lpstrInitialDir = fpath;
 	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_HIDEREADONLY;
 	ofn.FlagsEx = OFN_EX_NOPLACESBAR;
@@ -1621,168 +1622,190 @@ BOOL WINAPI DllMain(HINSTANCE hi, DWORD reason, LPVOID reserved)
 	return TRUE;
 }
 
-int _export cdecl ODBG_Plugininit(int ollydbgversion, HWND hw, ULONG *features)
+int _export cdecl ODBG2_Pluginquery(int ollydbgversion, wchar_t pluginname[SHORTNAME], wchar_t pluginversion[SHORTNAME])
 {
-	TCHAR path[MAX_PATH];
+	WCHAR path[MAX_PATH];
 	g_Config = config_parse(config_locate(path));
-	g_hInstance = GetModuleHandle(NULL);
-	g_hwndOlly = hw;
+	g_hInstance = _hollyinst;
+	g_hwndOlly = _hwollymain;
 	g_SessionStarted = FALSE;
 	g_Autoloaded = FALSE;
-	Addtolist(0, 0, "mapimp plugin v0.9");
-	Addtolist(0, -1, "  tPORt, 2009-2010");
-	return 0;
-}
-
-int _export cdecl ODBG_Plugindata(char shortname[32])
-{
-	strcpy(shortname, "mapimp");
+	Addtolist(0,  0, L"mapimp plugin v0.9");
+	Addtolist(0, -1, L"  tPORt, 2009-2010");
+	wcscpy(pluginname,    L"mapimp");
+	wcscpy(pluginversion, L"0.9");
 	return PLUGIN_VERSION;
 }
 
-int _export cdecl ODBG_Pluginmenu(int origin, char data[4096], void *item)
-{
-	if (origin == PM_MAIN)
-	{
-		strcpy(data, "0 Import map, 1 Options |3 About");
-		return 1;
-	}
-	return 0;
-}
-
-void _export cdecl ODBG_Pluginreset()
-{
-	g_SessionStarted = FALSE;
-}
-
-int _export cdecl ODBG_Pausedex(int reason, int extdata, t_reg *reg, DEBUG_EVENT *debugevent)
+int Menu_Import(t_table* pt, wchar_t* name, ulong index, int mode)
 {
 	list_t* names;
-	WIN32_FIND_DATA fdata;
-	TCHAR path[MAX_PATH];
-	TCHAR* pos;
-	HANDLE result;
-	if ((reason & PP_INT3BREAK) && !g_SessionStarted && !g_Autoloaded)
+	WCHAR path[TEXTLEN];
+	t_status status;
+
+	switch(mode)
 	{
-		g_SessionStarted = TRUE;
-		strcpy(path, (TCHAR*)Plugingetvalue(VAL_EXEFILENAME));
-		pos = strrchr(path, '.');
-		if (pos)
+	case MENU_VERIFY:
+		return MENU_NORMAL;
+	case MENU_EXECUTE:
+		status = _run.status;
+		if (status != STAT_IDLE && status != STAT_FINISHED && status != STAT_CLOSING)
 		{
-			strcpy(pos, ".map");
-		}
-		else
-		{
-			strcat(path, ".map");
-		}
-		result = FindFirstFile(path, &fdata);
-		if (result != INVALID_HANDLE_VALUE)
-		{
-			FindClose(result);
-			g_Autoloaded = TRUE;
-			if ((g_Config->aimport == AUTOIMPORT_ASK) && (MessageBox(g_hwndOlly, "Corresponding map file found. Do you want to import it now?",
-				"mapimp", MB_YESNO | MB_ICONQUESTION) == IDYES) || (g_Config->aimport == AUTOIMPORT_ALWAYS))
+			if (mapfile_browse(path))
 			{
 				names = mapfile_parse(path);
 				if (names)
 				{
 					mapfile_apply(names);
 					list_freenames(names);
-					Setcpu(0, 0, 0, 0, CPU_ASMFOCUS);
+					Setcpu(0, 0, 0, 0, 0, CPU_ASMFOCUS);
 				}
 				else
 				{
-					Flash("Failed to open the file");
+					Flash(L"Failed to open the file");
+				}
+			}
+		}
+		else
+		{
+			Flash(L"Start the debugging session first");
+		}
+		return MENU_NOREDRAW;
+	default:
+		return MENU_ABSENT;
+	}
+}
+
+int Menu_Options(t_table* pt, wchar_t* name, ulong index, int mode)
+{
+	switch(mode)
+	{
+	case MENU_VERIFY:
+		return MENU_NORMAL;
+	case MENU_EXECUTE:
+		configwnd_create();
+		return MENU_NOREDRAW;
+	default:
+		return MENU_ABSENT;
+	}
+}
+
+int Menu_About(t_table* pt, wchar_t* name, ulong index, int mode)
+{
+	switch(mode)
+	{
+	case MENU_VERIFY:
+		return MENU_NORMAL;
+	case MENU_EXECUTE:
+		MessageBox(g_hwndOlly, c_About, L"About mapimp", MB_ICONINFORMATION);
+		return MENU_NOREDRAW;
+	default:
+		return MENU_ABSENT;
+	}
+}
+
+t_menu mainmenu[] =
+{
+	{
+		L"Import map",
+		L"Import map",
+		(KK_DIRECT | KK_CTRL | KK_SHIFT | 'I'), &Menu_Import, NULL, 0
+	},
+
+	{
+		L"Options",
+		L"Options",
+		(KK_DIRECT | KK_CTRL | KK_SHIFT | 'M'), &Menu_Options, NULL, 0
+	},
+
+	{
+		L"Options",
+		L"About mapimp",
+		K_NONE, &Menu_About, NULL, 0
+	},
+
+	{
+		NULL, NULL, K_NONE, NULL, NULL, 0
+	}
+};
+
+t_menu* _export cdecl ODBG2_Pluginmenu(wchar_t* type)
+{
+	if(!wcscmp(type, PWM_MAIN))
+		return mainmenu;
+
+	return NULL;
+}
+
+void _export cdecl ODBG2_Pluginreset()
+{
+	g_SessionStarted = FALSE;
+}
+
+void _export cdecl _ODBG2_Pluginmainloop(DEBUG_EVENT *debugevent)
+{
+	list_t* names;
+	WIN32_FIND_DATA fdata;
+	WCHAR path[MAX_PATH];
+	WCHAR* pos;
+	HANDLE result;
+	if ((_run.status == STAT_PAUSED) &&
+		(debugevent->dwDebugEventCode == EXCEPTION_DEBUG_EVENT) &&
+		(debugevent->u.Exception.ExceptionRecord.ExceptionCode == EXCEPTION_BREAKPOINT) &&
+		(!g_SessionStarted && !g_Autoloaded))
+	{
+		g_SessionStarted = TRUE;
+		wcscpy(path, _executable);
+		pos = wcsrchr(path, L'.');
+		if (pos)
+		{
+			wcscpy(pos, L".map");
+		}
+		else
+		{
+			wcscat(path, L".map");
+		}
+		result = FindFirstFile(path, &fdata);
+		if (result != INVALID_HANDLE_VALUE)
+		{
+			FindClose(result);
+			g_Autoloaded = TRUE;
+			if ((g_Config->aimport == AUTOIMPORT_ASK) && (MessageBox(g_hwndOlly, L"Corresponding map file found. Do you want to import it now?",
+				L"mapimp", MB_YESNO | MB_ICONQUESTION) == IDYES) || (g_Config->aimport == AUTOIMPORT_ALWAYS))
+			{
+				names = mapfile_parse(path);
+				if (names)
+				{
+					mapfile_apply(names);
+					list_freenames(names);
+					Setcpu(0, 0, 0, 0, 0, CPU_ASMFOCUS);
+				}
+				else
+				{
+					Flash(L"Failed to open the file");
 				}
 			}
 		}
 	}
-	return 0;
 }
 
-void _export cdecl ODBG_Pluginaction(int origin, int action, void *item)
-{
-	list_t* names;
-	TCHAR path[TEXTLEN];
-	t_status status;
-	if (origin == PM_MAIN)
-	{
-		switch (action)
-		{
-			case ACTION_IMPORT:
-				status = Getstatus();
-				if (status && status != STAT_FINISHED && status != STAT_CLOSING)
-				{
-					if (mapfile_browse(path))
-					{
-						names = mapfile_parse(path);
-						if (names)
-						{
-							mapfile_apply(names);
-							list_freenames(names);
-							Setcpu(0, 0, 0, 0, CPU_ASMFOCUS);
-						}
-						else
-						{
-							Flash("Failed to open the file");
-						}
-					}
-				}
-				else
-				{
-					Flash("Start the debugging session first");
-				}
-				break;
-
-			case ACTION_OPTIONS:
-				configwnd_create();
-				break;
-
-			case ACTION_ABOUT:
-				MessageBox(g_hwndOlly, c_About, "About mapimp", MB_ICONINFORMATION);
-				break;
-
-			default:
-				break;
-		}
-	}
-}
-
-int _export cdecl ODBG_Pluginshortcut(int origin, int ctrl, int alt, int shift, int key, void* item)
-{
-	if (origin == PM_MAIN)
-	{
-		if (ctrl && shift && key == 'I')
-		{
-			ODBG_Pluginaction(origin, ACTION_IMPORT, NULL);
-		}
-		else if (ctrl && shift && key == 'M')
-		{
-			ODBG_Pluginaction(origin, ACTION_OPTIONS, NULL);
-		}
-	}
-	return origin;
-}
-
-void _export cdecl ODBG_Pluginsaveudd(t_module *pmod, int ismainmodule)
+void _export cdecl ODBG2_Pluginsaveudd(t_uddsave* psave, t_module* pmod, int ismainmodule)
 {
 	if (ismainmodule)
 	{
-		Pluginsaverecord(TAG_MAPIMP, sizeof(BOOL), &g_Autoloaded);
+		Pluginsaverecord(psave, TAG_MAPIMP, sizeof(BOOL), &g_Autoloaded);
 	}
 }
 
-int _export cdecl ODBG_Pluginuddrecord(t_module *pmod, int ismainmodule, ulong tag, ulong size, void *data)
+void _export cdecl ODBG2_Pluginuddrecord(t_module* pmod, int ismainmodule, ulong tag, ulong size, void* data)
 {
-	if (ismainmodule && tag == TAG_MAPIMP)
+	if (ismainmodule && tag == TAG_MAPIMP && size == sizeof(BOOL) && data)
 	{
 		g_Autoloaded = *(LPBOOL)data;
-		return 1;
 	}
-	return 0;
 }
 
-void _export cdecl ODBG_Plugindestroy()
+void _export cdecl ODBG2_Plugindestroy()
 {
 	list_freemasks(g_Config->masks);
 	free(g_Config);

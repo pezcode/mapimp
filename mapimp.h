@@ -38,7 +38,7 @@ POSSIBILITY OF SUCH DAMAGE BLAH BLAH BLAH
 /* Target specific stuff */
 #ifdef OLLYDBG
 
-#pragma comment(lib, "__odbg\\ollydbgvc7.lib")
+//#pragma comment(lib, "__odbg\\ollydbgvc7.lib")
 
 #else
 #ifdef IMMDBG
@@ -77,13 +77,13 @@ typedef struct
 typedef struct
 {
 	LPVOID next;
-	TCHAR* buffer;
-	TCHAR* repl;
+	CHAR* buffer;
+	CHAR* repl;
 	size_t repl_s;
 	int insert;
 	int type;	
 	int errcode;
-	TCHAR* errptr;
+	CHAR* errptr;
 	int erroffset;
 	pcre* regex;
 	pcre_extra* extra;
@@ -101,7 +101,7 @@ typedef struct
 typedef struct
 {
 	ULONG base;
-	TCHAR* name;
+	WCHAR* name;
 	PULONG segments;
 	size_t nseg;
 } module_t;
@@ -109,7 +109,7 @@ typedef struct
 typedef struct
 {
 	LPVOID next;
-	TCHAR* buffer;
+	WCHAR* buffer;
 	size_t size;
 	ULONG offset;
 	ULONG segment;
@@ -214,10 +214,10 @@ typedef enum
 #define CONFIG_STR_MAXSIZE    sizeof(CONFIG_STR_COLLISIONS)
 
 /* Option window definitions */
-#define OPTWND_CLASS_NAME     "mapimp_wnd"
-#define OPTWND_WINDOW_NAME    "Options"
-#define OPTWND_FONT_NAME      "Verdana"
-#define OPTWND_ICON_NAME      "ICO_OPTIONS"
+#define OPTWND_CLASS_NAME     L"mapimp_wnd"
+#define OPTWND_WINDOW_NAME    L"Options"
+#define OPTWND_FONT_NAME      L"Verdana"
+#define OPTWND_ICON_NAME      L"ICO_OPTIONS"
 #define OPTWND_WINDOW_WIDTH   354
 #define OPTWND_WINDOW_HEIGHT  312
 
