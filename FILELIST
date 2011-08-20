@@ -1,0 +1,10 @@
+DONTREADME             It's a lie. Read this file first.
+FILELIST               You are reading it now.
+HISTORY                Change log.
+SAMPLES                Mask samples and explanations.
+mapimp.c               mapimp source file.
+mapimp.h               mapimp header file.
+masktest.c             Mask testing application source file.
+bin/mapimp_idbg.dll    The plugin built for ImmunityDbg 1.73
+bin/mapimp_odbg.dll    The plugin built for OllyDbg 1.10
+bin/masktest.exe       Mask testing application.
