@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mapimp", "mapimp.vcproj", "{89A6D3D2-F7AB-4C97-8F0E-C60B89580806}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "masktest", "masktest.vcproj", "{2B2ABCB9-C5EE-4FD1-923D-014CA3D94FB4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{89A6D3D2-F7AB-4C97-8F0E-C60B89580806}.Debug|Win32.ActiveCfg = Debug|Win32
+		{89A6D3D2-F7AB-4C97-8F0E-C60B89580806}.Debug|Win32.Build.0 = Debug|Win32
+		{89A6D3D2-F7AB-4C97-8F0E-C60B89580806}.Release|Win32.ActiveCfg = Release|Win32
+		{89A6D3D2-F7AB-4C97-8F0E-C60B89580806}.Release|Win32.Build.0 = Release|Win32
+		{2B2ABCB9-C5EE-4FD1-923D-014CA3D94FB4}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2B2ABCB9-C5EE-4FD1-923D-014CA3D94FB4}.Debug|Win32.Build.0 = Debug|Win32
+		{2B2ABCB9-C5EE-4FD1-923D-014CA3D94FB4}.Release|Win32.ActiveCfg = Release|Win32
+		{2B2ABCB9-C5EE-4FD1-923D-014CA3D94FB4}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
